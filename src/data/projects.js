@@ -19,9 +19,9 @@ export const websiteProject = {
 
 export const aquariumProject = {
   id: 'project-03',
-  title: '桌面养鱼',
+  title: '鱼',
   description: '一方像素水景，鱼群自在游动。',
   video: '/media/aquarium-ambient-v2.mp4',
   poster: '/media/aquarium-ambient-v2.webp',
-  alt: '桌面养鱼游戏实录：鱼群持续游动，水草与光影轻轻摇曳',
+  alt: '《鱼》游戏实录：鱼群持续游动，水草与光影轻轻摇曳',
 }

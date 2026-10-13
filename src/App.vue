@@ -124,8 +124,7 @@ onBeforeUnmount(() => {
   <a class="skip-link" href="#main">跳到作品展示</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="#main"><span class="brand-mark" aria-hidden="true">作</span><h1>个人作品集</h1></a>
-      <nav aria-label="作品导航"><a href="#word-dengke"><span>01</span> 单词登科</a><a href="#tc888"><span>02</span> 赛事看板</a><a href="#project-03"><span>03</span> 桌面养鱼</a></nav>
+      <nav aria-label="作品导航"><a href="#word-dengke"><span>01</span> 单词登科</a><a href="#tc888"><span>02</span> 赛事看板</a><a href="#project-03"><span>03</span> {{ aquariumProject.title }}</a></nav>
     </div>
   </header>
 

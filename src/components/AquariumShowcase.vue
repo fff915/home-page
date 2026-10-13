@@ -83,11 +83,11 @@ onBeforeUnmount(() => {
         <div v-if="failed" class="player-overlay" role="alert"><p>鱼缸暂时无法加载，请刷新重试。</p></div>
         <div v-else-if="blocked && !detailOpen" class="player-overlay"><button class="overlay-play" type="button" @click="resume">播放鱼缸</button></div>
       </div>
-      <div class="aquarium-toolbar"><span>鱼缸实录 · {{ paused ? '已暂停' : '循环播放' }}</span><div><button type="button" :aria-label="paused ? '继续鱼缸播放' : '暂停鱼缸播放'" :aria-pressed="paused" :disabled="failed" @click="paused = !paused">{{ paused ? '继续' : '暂停' }}</button><button type="button" aria-label="放大桌面养鱼画面" @click="showDetails">放大画面 <span aria-hidden="true">⤢</span></button></div></div>
+      <div class="aquarium-toolbar"><span>鱼缸实录 · {{ paused ? '已暂停' : '循环播放' }}</span><div><button type="button" :aria-label="paused ? '继续鱼缸播放' : '暂停鱼缸播放'" :aria-pressed="paused" :disabled="failed" @click="paused = !paused">{{ paused ? '继续' : '暂停' }}</button><button type="button" aria-label="放大鱼缸画面" @click="showDetails">放大画面 <span aria-hidden="true">⤢</span></button></div></div>
     </div>
   </section>
   <dialog ref="dialog" class="website-dialog aquarium-dialog" aria-labelledby="aquarium-detail-title" @close="closeDetails" @click="event => { if (event.target === dialog) dialog.close() }" @keydown="trapFocus">
-    <div class="website-dialog-header"><div><h2 id="aquarium-detail-title">桌面养鱼</h2><p>鱼缸实录 · 循环播放</p></div><div class="website-dialog-actions"><button type="button" :aria-label="paused ? '继续放大鱼缸播放' : '暂停放大鱼缸播放'" :aria-pressed="paused" :disabled="failed" @click="paused = !paused">{{ paused ? '继续' : '暂停' }}</button><button type="button" aria-label="关闭桌面养鱼预览" autofocus @click="dialog.close()">关闭 ×</button></div></div>
+    <div class="website-dialog-header"><div><h2 id="aquarium-detail-title">{{ project.title }}</h2><p>鱼缸实录 · 循环播放</p></div><div class="website-dialog-actions"><button type="button" :aria-label="paused ? '继续放大鱼缸播放' : '暂停放大鱼缸播放'" :aria-pressed="paused" :disabled="failed" @click="paused = !paused">{{ paused ? '继续' : '暂停' }}</button><button type="button" aria-label="关闭鱼缸预览" autofocus @click="dialog.close()">关闭 ×</button></div></div>
     <div class="aquarium-detail-media">
       <video v-if="detailOpen" ref="detailVideo" :src="project.video" :poster="project.poster" autoplay muted loop playsinline :aria-label="project.alt" @loadedmetadata="detailReady" @canplay="syncPlayback" @error="failed = true"></video>
       <div v-if="failed" class="player-overlay" role="alert"><p>鱼缸暂时无法加载，请刷新重试。</p></div>
