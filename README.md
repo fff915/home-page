@@ -20,9 +20,15 @@ npm run build
 
 使用 `autoplay muted loop playsinline`，打开即播放，不依赖外部视频平台或在线字体。浏览器限制自动播放时显示“开始观看”；视频请求失败时显示明确提示。声音需要用户主动开启。
 
-## 添加另外两个项目
+## 第二个项目：tc888.one
 
-两个预留位在 `src/data/projects.js` 的 `upcomingProjects` 数组中，当前明确标注“待补充”。收到实际项目名称、介绍及素材后，在此维护数据，并在 `App.vue` 添加相应演示区域；媒体放入 `site-public/media/`。不要将凭据、真实直播用户数据或源工程写入公开静态目录。
+`src/data/projects.js` 的 `websiteProject` 管理第二个项目。展示 2026-10-13 从公开首页只读截取的桌面、手机截图，支持放大查看，并以新标签页打开 https://tc888.one/。截图中的赛程是拍摄时的页面内容，不作为实时数据。
+
+tc888.one 的响应包含 `X-Frame-Options: DENY` 和 CSP `frame-ancestors 'none'`，因此使用本地截图，不使用 iframe。此次仅修改 `home-page`，不修改 tc888.one 的文件、配置或仓库，也不代理它的页面。截图位于 `site-public/media/tc888-home-*-20261013.jpg`。
+
+## 添加第三个项目
+
+第三个预留位在 `src/data/projects.js` 的 `upcomingProjects` 数组中，当前标注“待补充”。收到实际项目名称、介绍及素材后，在此维护数据，并在 `App.vue` 添加相应演示区域；媒体放入 `site-public/media/`。不要将凭据、真实直播用户数据或源工程写入公开静态目录。
 
 ## 发布
 

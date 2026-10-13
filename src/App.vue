@@ -1,9 +1,10 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { featuredProject, upcomingProjects } from './data/projects'
+import { featuredProject, upcomingProjects, websiteProject } from './data/projects'
 
 const video = ref(null)
 const playerFrame = ref(null)
+const websiteDialog = ref(null)
 const muted = ref(true)
 const playing = ref(false)
 const blocked = ref(false)
@@ -13,6 +14,7 @@ const duration = ref(0)
 const expanded = ref(false)
 const userPaused = ref(false)
 let previousFocus = null
+let websitePreviousFocus = null
 const progress = computed(() => duration.value ? elapsed.value / duration.value * 100 : 0)
 const status = computed(() => failed.value ? '演示暂时无法加载' : blocked.value ? '点击开始演示' : playing.value ? '正在自动演示' : '演示已暂停')
 
@@ -45,8 +47,8 @@ function updateTime() {
   elapsed.value = video.value?.currentTime || 0
   duration.value = Number.isFinite(video.value?.duration) ? video.value.duration : 0
 }
-async function toggleExpanded() {
-  if (!expanded.value) previousFocus = document.activeElement
+async function toggleExpanded(event) {
+  if (!expanded.value) previousFocus = event?.currentTarget || document.activeElement
   expanded.value = !expanded.value
   document.body.classList.toggle('presentation-open', expanded.value)
   await nextTick()
@@ -77,6 +79,31 @@ function visibilityChanged() {
 function mediaFailed() {
   failed.value = true
   playing.value = false
+}
+function openWebsitePreview(event) {
+  websitePreviousFocus = event?.currentTarget || document.activeElement
+  websiteDialog.value?.showModal()
+  document.body.classList.add('presentation-open')
+}
+function websitePreviewClosed() {
+  if (!expanded.value) document.body.classList.remove('presentation-open')
+  websitePreviousFocus?.focus({ preventScroll: true })
+}
+function closeWebsiteBackdrop(event) {
+  if (event.target === websiteDialog.value) websiteDialog.value.close()
+}
+function handleWebsiteKeys(event) {
+  if (event.key !== 'Tab') return
+  const controls = [...websiteDialog.value.querySelectorAll('a[href], button:not(:disabled)')]
+  const first = controls[0]
+  const last = controls.at(-1)
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last?.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first?.focus()
+  }
 }
 onMounted(() => {
   if (video.value) video.value.muted = true
@@ -132,10 +159,34 @@ onBeforeUnmount(() => {
     </section>
 
     <section id="works" class="more-projects" aria-labelledby="works-title">
-      <div class="works-heading"><div><p class="eyebrow">MORE TO EXPLORE</p><h2 id="works-title">更多作品，即将展示。</h2></div><span class="works-count">02 — 03</span></div>
+      <div class="works-heading"><div><p class="eyebrow">MORE TO EXPLORE</p><h2 id="works-title">从互动游戏，到日常使用的网站。</h2></div><span class="works-count">02 — 03</span></div>
+      <article :id="websiteProject.id" class="website-project" aria-labelledby="website-title">
+        <div class="website-visual">
+          <div class="browser-bar"><span class="browser-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>tc888.one</span><span class="browser-label">首页预览</span></div>
+          <button type="button" class="website-screenshot" aria-label="放大 tc888.one 首页截图" @click="openWebsitePreview">
+            <picture><source media="(max-width: 760px)" :srcset="websiteProject.mobileImage" width="390" height="844"><img :src="websiteProject.desktopImage" width="820" height="940" loading="lazy" decoding="async" alt="tc888.one 首页：足球与篮球导航、日期筛选及赛事列表"></picture>
+            <span class="screenshot-zoom">查看大图 <span aria-hidden="true">↗</span></span>
+          </button>
+          <div class="screenshot-caption"><span>首页截图 · {{ websiteProject.capturedAt }}</span><span>最新内容请打开网站</span></div>
+        </div>
+        <div class="website-story">
+          <div class="website-meta"><span class="eyebrow">02 / WEBSITE</span><span class="website-badge">个人开发</span></div>
+          <h3 id="website-title">{{ websiteProject.title }}</h3>
+          <p class="website-subtitle">{{ websiteProject.subtitle }}</p>
+          <p class="website-description">{{ websiteProject.description }}</p>
+          <div class="tags" aria-label="网站功能"><span v-for="feature in websiteProject.features" :key="feature">{{ feature }}</span></div>
+          <div class="website-actions"><a class="primary-button" :href="websiteProject.url" target="_blank" rel="noopener noreferrer" aria-label="打开 tc888.one 网站（新标签页）">打开网站 <span aria-hidden="true">↗</span></a><button class="text-link" type="button" @click="openWebsitePreview">放大首页 <span aria-hidden="true">⤢</span></button></div>
+          <p class="website-footnote">手机与电脑均可访问 · 在新标签页打开</p>
+        </div>
+      </article>
       <div class="upcoming-grid"><article v-for="project in upcomingProjects" :key="project.id" class="upcoming-card"><div class="upcoming-meta"><span>{{ project.number }} / PROJECT</span><span class="upcoming-badge">待补充</span></div><div class="placeholder-art" aria-hidden="true"><span class="placeholder-index">{{ project.number }}</span><span class="placeholder-line"></span><span class="placeholder-square"></span></div><div class="upcoming-content"><h3>{{ project.title }}</h3><p>{{ project.description }}</p><span class="upcoming-footnote">项目介绍 · 运行演示 · 技术实现</span></div></article></div>
     </section>
   </main>
+
+  <dialog ref="websiteDialog" class="website-dialog" aria-labelledby="website-preview-title" @close="websitePreviewClosed" @click="closeWebsiteBackdrop" @keydown="handleWebsiteKeys">
+    <div class="website-dialog-header"><div><h2 id="website-preview-title">tc888.one · 首页</h2><p>首页截图 · {{ websiteProject.capturedAt }}</p></div><div class="website-dialog-actions"><a :href="websiteProject.url" target="_blank" rel="noopener noreferrer" aria-label="打开 tc888.one 原站（新标签页）">打开原站 ↗</a><button type="button" aria-label="关闭首页预览" autofocus @click="websiteDialog.close()">关闭 ×</button></div></div>
+    <div class="website-dialog-image"><picture><source media="(max-width: 760px)" :srcset="websiteProject.mobileImage" width="390" height="844"><img :src="websiteProject.desktopImage" width="820" height="940" loading="lazy" decoding="async" alt="tc888.one 网站首页截图，展示赛事导航、日期筛选和比赛信息"></picture></div>
+  </dialog>
 
   <footer class="site-footer"><a class="brand" href="#">fff<span class="brand-plus">.plus</span></a><p>让作品自己说话。</p><a href="#main">回到顶部 <span aria-hidden="true">↑</span></a></footer>
 </template>
