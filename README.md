@@ -20,7 +20,7 @@ npm run build
 - `site-public/media/word-dengke-poster.webp`：演示封面。
 - `site-public/media/word-dengke-share.jpg`：分享图片。
 
-使用 `autoplay muted loop playsinline`，打开即播放，不依赖外部视频平台或在线字体。浏览器限制自动播放时显示“开始观看”；视频请求失败时显示明确提示。声音需要用户主动开启。
+使用 `autoplay muted loop playsinline`，打开即静音循环播放，不依赖外部视频平台或在线字体。补充浏览器非手动暂停、重新进入可见区域、页面恢复和重新获得焦点时的续播处理；播放中断不重置进度，手动暂停则保持暂停。多个加载事件合并播放请求，后台切换产生的 `AbortError` 不显示为自动播放限制。浏览器限制自动播放时显示“开始观看”；视频请求失败时显示明确提示。声音需要用户主动开启。
 
 ## 第二个项目：tc888.one
 

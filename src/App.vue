@@ -16,23 +16,38 @@ const expanded = ref(false)
 const userPaused = ref(false)
 let previousFocus = null
 let websitePreviousFocus = null
+let playPending = false
+let resumeTimer
+let playbackObserver
 const progress = computed(() => duration.value ? elapsed.value / duration.value * 100 : 0)
-const status = computed(() => failed.value ? '演示暂时无法加载' : blocked.value ? '点击开始演示' : playing.value ? '正在自动演示' : '演示已暂停')
+const status = computed(() => failed.value ? '演示暂时无法加载' : blocked.value ? '点击开始演示' : playing.value ? '正在自动演示' : userPaused.value ? '演示已暂停' : '正在加载演示')
 
 async function startPlayback() {
-  if (!video.value || failed.value) return
+  const media = video.value
+  if (!media || failed.value || userPaused.value || document.hidden || playPending) return
+  playPending = true
   try {
-    await video.value.play()
+    media.muted = muted.value
+    media.playsInline = true
+    await media.play()
     blocked.value = false
-  } catch {
-    blocked.value = true
+  } catch (error) {
+    // A background transition can cancel play(); it does not require a user gesture.
+    if (error.name === 'AbortError' || document.hidden || userPaused.value) return
+    if (error.name === 'NotSupportedError') mediaFailed()
+    else blocked.value = true
     playing.value = false
+  } finally {
+    playPending = false
   }
 }
+function resumePlayback() {
+  userPaused.value = false
+  return startPlayback()
+}
 async function togglePlayback() {
-  if (video.value?.paused) {
-    userPaused.value = false
-    await startPlayback()
+  if (video.value?.paused || userPaused.value) {
+    await resumePlayback()
   } else {
     userPaused.value = true
     video.value?.pause()
@@ -72,7 +87,23 @@ function handleEscape(event) {
   }
 }
 function autoPlayback() {
-  if (!userPaused.value && !document.hidden) startPlayback()
+  if (!userPaused.value && !document.hidden && video.value?.paused) startPlayback()
+}
+function playbackPaused() {
+  playing.value = false
+  clearTimeout(resumeTimer)
+  if (userPaused.value || document.hidden || failed.value || blocked.value) return
+  // Resume browser interruptions without restarting the recording or overriding Pause.
+  resumeTimer = setTimeout(autoPlayback, 200)
+}
+function playbackEnded() {
+  if (video.value && !userPaused.value) {
+    video.value.currentTime = 0
+    autoPlayback()
+  }
+}
+function retryOnGesture() {
+  if (blocked.value) autoPlayback()
 }
 function visibilityChanged() {
   if (document.hidden) video.value?.pause()
@@ -108,14 +139,31 @@ function handleWebsiteKeys(event) {
   }
 }
 onMounted(() => {
-  if (video.value) video.value.muted = true
+  if (video.value) {
+    video.value.defaultMuted = true
+    video.value.muted = true
+    playbackObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) autoPlayback()
+    })
+    playbackObserver.observe(video.value)
+  }
   startPlayback()
   document.addEventListener('keydown', handleEscape)
   document.addEventListener('visibilitychange', visibilityChanged)
+  document.addEventListener('pointerup', retryOnGesture)
+  document.addEventListener('keyup', retryOnGesture)
+  window.addEventListener('pageshow', autoPlayback)
+  window.addEventListener('focus', autoPlayback)
 })
 onBeforeUnmount(() => {
+  clearTimeout(resumeTimer)
+  playbackObserver?.disconnect()
   document.removeEventListener('keydown', handleEscape)
   document.removeEventListener('visibilitychange', visibilityChanged)
+  document.removeEventListener('pointerup', retryOnGesture)
+  document.removeEventListener('keyup', retryOnGesture)
+  window.removeEventListener('pageshow', autoPlayback)
+  window.removeEventListener('focus', autoPlayback)
   document.body.classList.remove('presentation-open')
 })
 </script>
@@ -140,8 +188,8 @@ onBeforeUnmount(() => {
         <div class="stage-header"><span>实机录制 · 模拟互动</span><span class="play-status" :class="{ active: playing }"><i aria-hidden="true"></i>{{ status }}</span></div>
         <div ref="playerFrame" class="player-frame" tabindex="-1">
           <button v-if="expanded" class="close-presentation" type="button" aria-label="退出放大观看" @click="toggleExpanded">关闭 <span aria-hidden="true">×</span></button>
-          <video ref="video" :src="featuredProject.video" :poster="featuredProject.poster" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="单词登科 Unity 实机运行录屏，包含模拟答题、礼物与排名" @play="playing = true" @pause="playing = false" @timeupdate="updateTime" @loadedmetadata="updateTime" @canplay="autoPlayback" @error="mediaFailed"></video>
-          <div v-if="blocked && !failed" class="player-overlay"><button type="button" class="overlay-play" @click="startPlayback"><span aria-hidden="true">▶</span> 开始观看</button></div>
+          <video ref="video" :src="featuredProject.video" :poster="featuredProject.poster" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="单词登科 Unity 实机运行录屏，包含模拟答题、礼物与排名" @play="playing = true; blocked = false" @pause="playbackPaused" @ended="playbackEnded" @timeupdate="updateTime" @loadedmetadata="updateTime" @canplay="autoPlayback" @error="mediaFailed"></video>
+          <div v-if="blocked && !failed" class="player-overlay"><button type="button" class="overlay-play" @click="resumePlayback"><span aria-hidden="true">▶</span> 开始观看</button></div>
           <div v-if="failed" class="player-overlay error-overlay"><p>演示暂时无法加载</p><p>请检查网络后刷新页面。</p></div>
           <div class="video-progress" aria-hidden="true"><span :style="{ width: `${progress}%` }"></span></div>
         </div>
