@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { featuredProject, upcomingProjects, websiteProject } from './data/projects'
+import { aquariumProject, featuredProject, websiteProject } from './data/projects'
+import AquariumShowcase from './components/AquariumShowcase.vue'
 
 const video = ref(null)
 const playerFrame = ref(null)
@@ -124,7 +125,7 @@ onBeforeUnmount(() => {
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="#main"><span class="brand-mark" aria-hidden="true">作</span><h1>个人作品集</h1></a>
-      <nav aria-label="作品导航"><a href="#word-dengke"><span>01</span> 单词登科</a><a href="#tc888"><span>02</span> 赛事看板</a><a href="#project-03"><span>03</span> 待展示</a></nav>
+      <nav aria-label="作品导航"><a href="#word-dengke"><span>01</span> 单词登科</a><a href="#tc888"><span>02</span> 赛事看板</a><a href="#project-03"><span>03</span> 桌面养鱼</a></nav>
     </div>
   </header>
 
@@ -165,7 +166,7 @@ onBeforeUnmount(() => {
         <div class="website-actions"><a class="primary-button" :href="websiteProject.url" target="_blank" rel="noopener noreferrer" aria-label="打开赛事看板（新标签页）">打开作品 <span aria-hidden="true">↗</span></a><button class="secondary-button" type="button" @click="openWebsitePreview">放大首页 <span aria-hidden="true">⤢</span></button></div>
       </section>
 
-      <section v-for="project in upcomingProjects" :id="project.id" :key="project.id" class="work-card upcoming-card" :aria-labelledby="`${project.id}-title`"><span class="placeholder-index" aria-hidden="true">{{ project.number }}</span><div><h2 :id="`${project.id}-title`">{{ project.title }}</h2><p class="work-description">{{ project.description }}</p></div><span class="upcoming-badge">待展示</span></section>
+      <AquariumShowcase :project="aquariumProject" />
     </div>
   </main>
 

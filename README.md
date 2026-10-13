@@ -2,7 +2,7 @@
 
 面向手机与桌面的个人作品展示页。首页打开后默认静音循环播放《单词登科》的 Unity 实机运行录制，可暂停、开启声音或放大观看。互动数据来自本地模拟流，不代表真实直播间观众。网页用于展示，不在浏览器运行 Windows EXE。
 
-页面以手机展示为主：顶部提供三个作品的快捷入口，每个作品只保留名称和一句简介。游戏控制区在常见手机首屏内，第二个项目使用“赛事看板”作为展示名称，第三个作品保留待展示位置。页面标题、正文和预览弹窗不显示域名，访问链接仍可正常打开原站。
+页面以手机展示为主：顶部提供三个作品的快捷入口，每个作品只保留名称和一句简介。游戏控制区在常见手机首屏内，第二个项目使用“赛事看板”作为展示名称，第三个项目为《桌面养鱼》。页面标题、正文和预览弹窗不显示域名，访问链接仍可正常打开原站。
 
 ## 本地运行
 
@@ -28,9 +28,11 @@ npm run build
 
 tc888.one 的响应包含 `X-Frame-Options: DENY` 和 CSP `frame-ancestors 'none'`，因此使用本地截图，不使用 iframe。此次仅修改 `home-page`，不修改 tc888.one 的文件、配置或仓库，也不代理它的页面。截图位于 `site-public/media/tc888-home-*-20261013.jpg`。
 
-## 添加第三个项目
+## 第三个项目：桌面养鱼
 
-第三个预留位在 `src/data/projects.js` 的 `upcomingProjects` 数组中，当前标注“待补充”。收到实际项目名称、介绍及素材后，在此维护数据，并在 `App.vue` 添加相应演示区域；媒体放入 `site-public/media/`。不要将凭据、真实直播用户数据或源工程写入公开静态目录。
+`src/data/projects.js` 的 `aquariumProject` 管理内容，`src/components/AquariumShowcase.vue` 展示水景、小丑鱼互动、鲨鱼互动、收藏繁殖四组画面。进入可见区域后自动轮播，支持暂停、手动切换和放大；放大后的宽幅截图可以横向滑动查看。页面仅展示既有游戏画面，不提供浏览器试玩。
+
+素材只读来自用户指定的 `E:\桌面养鱼\output`：`petting-native-water.png`、`warehouse-market-28-preview.png`、`petting-contact-v2-ClownHappy-native.gif`、`petting-contact-v4-SharkBite-native.gif`。转换后的 WebP 与 H.264 文件另存于本站 `site-public/media/aquarium-*`。两段动图来自原项目既有的 Unity Player 实际渲染记录，仅转为网页视频格式；收藏截图取左上方 1234 × 604 的繁殖与仓库区域，不改动原图。此次未启动原游戏或编辑器，未写入原游戏目录、构建或存档。
 
 ## 发布
 
