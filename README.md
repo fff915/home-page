@@ -26,6 +26,6 @@ npm run build
 
 ## 发布
 
-仓库 `fff915/home-page` 的 `main` 分支已连接 Cloudflare Pages 项目 `home-page`。构建命令继续使用 `npm run build`，发布目录继续使用 `dist`。提交到 `main` 后由现有 Pages 集成部署，域名为 https://fff.plus/。无需创建新的 Worker 或改动域名绑定。
+仓库 `fff915/home-page` 的 `main` 分支已连接 Cloudflare Pages。构建命令继续使用 `npm run build`，发布目录继续使用 `dist`。提交到 `main` 后由现有 Pages 集成部署，域名为 https://fff.plus/。无需创建新的 Worker 或改动域名绑定。
 
 原模板的 LICENSE 保留。旧站内容可从 Git 历史恢复。
