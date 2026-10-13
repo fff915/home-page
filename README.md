@@ -30,9 +30,9 @@ tc888.one 的响应包含 `X-Frame-Options: DENY` 和 CSP `frame-ancestors 'none
 
 ## 第三个项目：桌面养鱼
 
-`src/data/projects.js` 的 `aquariumProject` 管理内容，`src/components/AquariumShowcase.vue` 展示水景、小丑鱼互动、鲨鱼互动、收藏繁殖四组画面。进入可见区域后自动轮播，支持暂停、手动切换和放大；放大后的宽幅截图可以横向滑动查看。页面仅展示既有游戏画面，不提供浏览器试玩。
+`src/data/projects.js` 的 `aquariumProject` 管理内容，`src/components/AquariumShowcase.vue` 静音循环播放完整动态鱼缸。鱼群、水草与水面光影持续运动，不再切换静态图片或互动片段；支持暂停和放大，放大及收起时保持播放进度。画面进入可见区域后自动播放，切换到后台时暂停以节省资源。页面仅展示游戏实录，不提供浏览器试玩。
 
-素材只读来自用户指定的 `E:\桌面养鱼\output`：`petting-native-water.png`、`warehouse-market-28-preview.png`、`petting-contact-v2-ClownHappy-native.gif`、`petting-contact-v4-SharkBite-native.gif`。转换后的 WebP 与 H.264 文件另存于本站 `site-public/media/aquarium-*`。两段动图来自原项目既有的 Unity Player 实际渲染记录，仅转为网页视频格式；收藏截图取左上方 1234 × 604 的繁殖与仓库区域，不改动原图。此次未启动原游戏或编辑器，未写入原游戏目录、构建或存档。
+动态素材为 `site-public/media/aquarium-ambient-v2.mp4`（H.264，静音）与同名 WebP 封面。录制在本站忽略的 `.cache/aquarium-loop` 中进行：只读复制 `E:\桌面养鱼` 的运行构建、脚本和验证用存档，在副本中添加离屏帧采集，并通过游戏自带的验证环境变量隔离存档。采集内容仅为 Unity 水景渲染纹理，不含桌面或游戏菜单。仅副本参与运行，原游戏目录、构建、脚本和用户存档均不改动。
 
 ## 发布
 
